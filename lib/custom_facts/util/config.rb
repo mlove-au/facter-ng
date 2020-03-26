@@ -36,6 +36,10 @@ module LegacyFacter
         @external_facts_dirs
       end
 
+      def self.facts_cache_dir
+        @facts_cache_dir
+      end
+
       def self.setup_default_ext_facts_dirs
         if LegacyFacter::Util::Root.root?
           windows_dir = windows_data_dir
@@ -67,6 +71,17 @@ module LegacyFacter
       def self.override_binary_dir
         @override_binary_dir
       end
+
+      def self.setup_default_cache_dir
+        windows_dir = windows_data_dir
+        @facts_cache_dir = if windows_dir
+          File.join(windows_dir, 'PuppetLabs', 'facter', 'cache', 'cached_facts')
+        else
+          '/opt/puppetlabs/facter/cache/cached_facts'
+        end
+      end
+
+      setup_default_cache_dir
 
       def self.setup_default_override_binary_dir
         @override_binary_dir = if LegacyFacter::Util::Config.windows?

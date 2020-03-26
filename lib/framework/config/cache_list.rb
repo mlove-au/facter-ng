@@ -13,13 +13,13 @@ module Facter
 
     # Get the group name a fact is part of
     def get_fact_group(fact_name)
-      @cache_groups.detect{|k, v| break k if Array(v).include?(fact_name) }
+      @cache_groups.detect{|k, v| break k if Array(v).include?(fact_name.split('.').first) }
     end
 
     # Get config ttls for a given group
     def get_group_ttls(group_name)
       if ttls = @groups_ttls.find { |g| g[group_name] }
-        ttls[group_name]
+        ttls_to_seconds(ttls[group_name])
       else
         nil
       end
@@ -31,6 +31,21 @@ module Facter
       @cache_groups = Facter::GroupList.instance.groups
       options = Options.instance
       @groups_ttls = ConfigReader.new(options[:config]).ttls || {}
+    end
+
+    def ttls_to_seconds(ttls)
+      duration, unit = ttls.split(' ', 2)
+      time = duration.to_i
+      case unit
+      when 'seconds'
+        return time
+      when 'minutes'
+        return time * 60
+      when 'hours'
+        return time * 60 * 60
+      when 'days'
+        return time * 60 * 60 * 24
+      end
     end
   end
 end
