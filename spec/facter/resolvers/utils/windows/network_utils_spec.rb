@@ -126,7 +126,7 @@ describe NetworkUtils do
   end
 
   describe '#find_mac_address' do
-    context 'from a char array' do
+    context 'with a char array' do
       let(:adapter) do
         Ps = Struct.new(:PhysicalAddress, :PhysicalAddressLength)
         Ps.new([0, 80, 86, 154, 248, 107, 0, 0], 6)
@@ -139,7 +139,7 @@ describe NetworkUtils do
   end
 
   describe '#get_scope' do
-    context "address's scope should be link" do
+    context "when address's scope is link" do
       let(:address) { 'fe80::b13f:903e:5f5:3b52' }
 
       it 'returns scope6' do
@@ -147,7 +147,7 @@ describe NetworkUtils do
       end
     end
 
-    context "address's scope should be global" do
+    context "when address's scope is global" do
       let(:address) { '::ffff:192.0.2.128' }
 
       it 'returns scope6' do
@@ -155,7 +155,7 @@ describe NetworkUtils do
       end
     end
 
-    context "address's scope should be ipv4 compatible" do
+    context "when address's scope is ipv4 compatible" do
       let(:address) { '::192.0.2.128' }
 
       it 'returns scope6' do
@@ -163,7 +163,7 @@ describe NetworkUtils do
       end
     end
 
-    context "address's scope should be site" do
+    context "when address's scope is site" do
       let(:address) { 'fec0::' }
 
       it 'returns scope6' do
