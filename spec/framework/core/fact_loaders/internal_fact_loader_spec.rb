@@ -1,15 +1,20 @@
 # frozen_string_literal: true
 
 describe Facter::InternalFactLoader do
+  let(:os_detector_spy) { instance_spy(OsDetector) }
+  let(:class_discoverer_spy) { instance_spy(Facter::ClassDiscoverer) }
+
   before do
-    allow_any_instance_of(OsDetector).to receive(:hierarchy).and_return([:Debian])
+    allow(OsDetector).to receive(:instance).and_return(os_detector_spy)
+    allow(os_detector_spy).to receive(:hierarchy).and_return([:Debian])
+    allow(Facter::ClassDiscoverer).to receive(:instance).and_return(class_discoverer_spy)
   end
 
   describe '#initialize' do
     context 'load facts' do
       it 'loads one legacy fact and sees it as core' do
-        allow_any_instance_of(OsDetector).to receive(:hierarchy).and_return([:Windows])
-        allow_any_instance_of(Facter::ClassDiscoverer)
+        allow(os_detector_spy).to receive(:hierarchy).and_return([:Windows])
+        allow(class_discoverer_spy)
           .to receive(:discover_classes)
           .with(:Windows)
           .and_return([Facts::Windows::NetworkInterfaces])
@@ -26,7 +31,7 @@ describe Facter::InternalFactLoader do
       end
 
       it 'loads one core fact' do
-        allow_any_instance_of(Facter::ClassDiscoverer)
+        allow(class_discoverer_spy)
           .to receive(:discover_classes)
           .with(:Debian)
           .and_return([Facts::Debian::Os::Name])
@@ -41,9 +46,9 @@ describe Facter::InternalFactLoader do
       end
 
       it 'loads one legacy fact and one core fact' do
-        allow_any_instance_of(OsDetector).to receive(:hierarchy).and_return([:Windows])
+        allow(os_detector_spy).to receive(:hierarchy).and_return([:Windows])
 
-        allow_any_instance_of(Facter::ClassDiscoverer)
+        allow(class_discoverer_spy)
           .to receive(:discover_classes)
           .with(:Windows)
           .and_return([Facts::Windows::NetworkInterfaces, Facts::Windows::Os::Name])
@@ -61,7 +66,7 @@ describe Facter::InternalFactLoader do
       end
 
       it 'loads no facts' do
-        allow_any_instance_of(Facter::ClassDiscoverer)
+        allow(class_discoverer_spy)
           .to receive(:discover_classes)
           .with(:Debian)
           .and_return([])
